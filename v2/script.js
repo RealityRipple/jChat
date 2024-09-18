@@ -16,6 +16,28 @@
     })(window.location.search.substr(1).split('&'))
 })(jQuery);
 
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+}
+
+function escapeHtml(message) {
+    return message
+        .replace(/&/g, "&amp;")
+        .replace(/(<)(?!3)/g, "&lt;")
+        .replace(/(>)(?!\()/g, "&gt;");
+}
+
+function TwitchAPI(endpoint) {
+    return $.ajax({
+         beforeSend: function(request) {
+             request.setRequestHeader('Authorization', 'Bearer ' + twAPI_Token);
+             request.setRequestHeader('Client-Id', twAPI_Client);
+         },
+         dataType: 'json',
+         url: 'https://api.twitch.tv/helix' + endpoint
+    });
+}
+
 Chat = {
     info: {
         channel: null,
@@ -34,12 +56,13 @@ Chat = {
         userBadges: {},
         ffzapBadges: null,
         bttvBadges: null,
-        seventvBadges: null,
+        seventvBadges: [],
         chatterinoBadges: null,
         cheers: {},
         lines: [],
         blockedUsers: ('block' in $.QueryString ? $.QueryString.block.toLowerCase().split(',') : false),
-        bots: ['streamelements', 'streamlabs', 'nightbot', 'moobot', 'fossabot']
+        bots: ['streamelements', 'streamlabs', 'nightbot', 'moobot', 'fossabot'],
+        nicknameColor: ('cN' in $.QueryString ? $.QueryString.cN : false)
     },
 
     loadEmotes: function(channelID) {
@@ -79,54 +102,131 @@ Chat = {
             });
         });
 
-        ['emotes/global', 'users/' + encodeURIComponent(channelID) + '/emotes'].forEach(endpoint => {
-            $.getJSON('https://api.7tv.app/v2/' + endpoint).done(function(res) {
-                res.forEach(emote => {
-                    Chat.info.emotes[emote.name] = {
-                        id: emote.id,
-                        image: emote.urls[emote.urls.length - 1][1],
-                        zeroWidth: emote.visibility_simple.includes("ZERO_WIDTH")
-                    };
-                });
-            });
-        });
+        $.getJSON('https://7tv.io/v3/emote-sets/global').done((res) => {
+            res?.emotes?.forEach(emote => {
+                const emoteData = emote.data.host.files.pop();
+                Chat.info.emotes[emote.name] = {
+                    id: emote.id,
+                    image: `https:${emote.data.host.url}/${emoteData.name}`,
+                    zeroWidth: emote.data.flags == 256,
+                }
+            })
+        })
+
+        $.getJSON('https://7tv.io/v3/users/twitch/' + encodeURIComponent(channelID)).done((res) => {
+            res?.emote_set?.emotes?.forEach(emote => {
+                const emoteData=emote.data.host.files.pop();
+                Chat.info.emotes[emote.name] = {
+                    id: emote.id,
+                    image: `https:${emote.data.host.url}/${emoteData.name}`,
+                    zeroWidth: emote.data.flags == 256,
+                }
+            })
+        })
     },
 
     load: function(callback) {
-        TwitchAPI('https://api.twitch.tv/v5/users?login=' + Chat.info.channel).done(function(res) {
-            Chat.info.channelID = res.users[0]._id;
+        TwitchAPI("/users?login=" + Chat.info.channel).done(function(res) {
+            res = res.data[0]
+            Chat.info.channelID = res.id;
             Chat.loadEmotes(Chat.info.channelID);
 
-            // Load CSS
-            let size = sizes[Chat.info.size - 1];
-            let font = fonts[Chat.info.font];
-
-            appendCSS('size', size);
-            appendCSS('font', font);
-
-            if (Chat.info.stroke && Chat.info.stroke > 0) {
-                let stroke = strokes[Chat.info.stroke - 1];
-                appendCSS('stroke', stroke);
+            switch (Chat.info.size) {
+                case 1:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/size_small.css"}).appendTo("head");
+                    break;
+                case 2:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/size_medium.css"}).appendTo("head");
+                    break;
+                default:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/size_large.css"}).appendTo("head");
+                    break;
             }
-            if (Chat.info.shadow && Chat.info.shadow > 0) {
-                let shadow = shadows[Chat.info.shadow - 1];
-                appendCSS('shadow', shadow);
+
+            switch (Chat.info.font) {
+                case 1:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_SegoeUI.css"}).appendTo("head");
+                    break;
+                case 2:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_Roboto.css"}).appendTo("head");
+                    break;
+                case 3:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_Lato.css"}).appendTo("head");
+                    break;
+                case 4:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_NotoSans.css"}).appendTo("head");
+                    break;
+                case 5:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_SourceCodePro.css"}).appendTo("head");
+                    break;
+                case 6:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_Impact.css"}).appendTo("head");
+                    break;
+                case 7:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_Comfortaa.css"}).appendTo("head");
+                    break;
+                case 8:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_DancingScript.css"}).appendTo("head");
+                    break;
+                case 9:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_IndieFlower.css"}).appendTo("head");
+                    break;
+                case 10:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_PressStart2P.css"}).appendTo("head");
+                    break;
+                case 11:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_Wallpoet.css"}).appendTo("head");
+                    break;
+                default:
+                    $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/font_BalooTammudu.css"}).appendTo("head");
+                    break;
+            }
+
+            if (Chat.info.stroke) {
+                switch (Chat.info.stroke) {
+                 case 1:
+                     $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/stroke_thin.css"}).appendTo("head");
+                     break;
+                 case 2:
+                     $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/stroke_medium.css"}).appendTo("head");
+                     break;
+                 case 3:
+                     $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/stroke_thick.css"}).appendTo("head");
+                     break;
+                 case 4:
+                     $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/stroke_thicker.css"}).appendTo("head");
+                     break;
+                }
+            }
+
+            if (Chat.info.shadow) {
+                switch (Chat.info.shadow) {
+                 case 1:
+                     $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/shadow_small.css"}).appendTo("head");
+                     break;
+                 case 2:
+                     $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/shadow_medium.css"}).appendTo("head");
+                     break;
+                 case 3:
+                     $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/shadow_large.css"}).appendTo("head");
+                     break;
+                }
             }
             if (Chat.info.smallCaps) {
-                appendCSS('variant', 'SmallCaps');
+                $("<link/>",{rel:"stylesheet",type:"text/css",href:"styles/variant_SmallCaps.css"}).appendTo("head");
             }
 
             // Load badges
-            TwitchAPI('https://badges.twitch.tv/v1/badges/global/display').done(function(global) {
-                Object.entries(global.badge_sets).forEach(badge => {
-                    Object.entries(badge[1].versions).forEach(v => {
-                        Chat.info.badges[badge[0] + ':' + v[0]] = v[1].image_url_4x;
+            TwitchAPI('/chat/badges/global').done(function(res) {
+                res?.data.forEach(badge => {
+                    badge?.versions.forEach(version => {
+                        Chat.info.badges[badge.set_id + ':' + version.id] = version.image_url_4x;
                     });
                 });
-                TwitchAPI('https://badges.twitch.tv/v1/badges/channels/' + encodeURIComponent(Chat.info.channelID) + '/display').done(function(channel) {
-                    Object.entries(channel.badge_sets).forEach(badge => {
-                        Object.entries(badge[1].versions).forEach(v => {
-                            Chat.info.badges[badge[0] + ':' + v[0]] = v[1].image_url_4x;
+                TwitchAPI('/chat/badges?broadcaster_id=' + Chat.info.channelID).done(function(res) {
+                    res?.data.forEach(badge => {
+                        badge?.versions.forEach(version => {
+                            Chat.info.badges[badge.set_id + ':' + version.id] = version.image_url_4x;
                         });
                     });
                     $.getJSON('https://api.frankerfacez.com/v1/_room/id/' + encodeURIComponent(Chat.info.channelID)).done(function(res) {
@@ -156,13 +256,6 @@ Chat = {
                         Chat.info.bttvBadges = [];
                     });
 
-                $.getJSON('https://api.7tv.app/v2/badges?user_identifier=login')
-                    .done(function(res) {
-                        Chat.info.seventvBadges = res.badges;
-                    })
-                    .fail(function() {
-                        Chat.info.seventvBadges = [];
-                    });
 
                 $.getJSON('https://api.chatterino.com/badges')
                     .done(function(res) {
@@ -174,8 +267,9 @@ Chat = {
             }
 
             // Load cheers images
-            TwitchAPI("https://api.twitch.tv/v5/bits/actions?channel_id=" + Chat.info.channelId).done(function(res) {
-                res.actions.forEach(action => {
+            TwitchAPI("/bits/cheermotes?broadcaster_id=" + Chat.info.channelID).done(function(res) {
+                res = res.data
+                res.forEach(action => {
                     Chat.info.cheers[action.prefix] = {}
                     action.tiers.forEach(tier => {
                         Chat.info.cheers[action.prefix][tier.min_bits] = {
@@ -232,7 +326,7 @@ Chat = {
                 Object.entries(res.badges).forEach(badge => {
                     var userBadge = {
                         description: badge[1].title,
-                        url: 'https:' + badge[1].urls['4'],
+                        url: badge[1].urls['4'],
                         color: badge[1].color
                     };
                     if (!Chat.info.userBadges[nick].includes(userBadge)) Chat.info.userBadges[nick].push(userBadge);
@@ -359,12 +453,15 @@ Chat = {
             // Writing username
             var $username = $('<span></span>');
             $username.addClass('nick');
-            if (typeof(info.color) === 'string') {
-                if (tinycolor(info.color).getBrightness() <= 50) var color = tinycolor(info.color).lighten(30);
-                else var color = info.color;
-            } else {
-                const twitchColors = ["#FF0000", "#0000FF", "#008000", "#B22222", "#FF7F50", "#9ACD32", "#FF4500", "#2E8B57", "#DAA520", "#D2691E", "#5F9EA0", "#1E90FF", "#FF69B4", "#8A2BE2", "#00FF7F"];
-                var color = twitchColors[nick.charCodeAt(0) % 15];
+            if (Chat.info.nicknameColor) var color = Chat.info.nicknameColor;
+            else {
+                if (typeof(info.color) === 'string') {
+                    if (tinycolor(info.color).getBrightness() <= 50) var color = tinycolor(info.color).lighten(30);
+                    else var color = info.color;
+                } else {
+                    const twitchColors = ["#FF0000", "#0000FF", "#008000", "#B22222", "#FF7F50", "#9ACD32", "#FF4500", "#2E8B57", "#DAA520", "#D2691E", "#5F9EA0", "#1E90FF", "#FF69B4", "#8A2BE2", "#00FF7F"];
+                    var color = twitchColors[nick.charCodeAt(0) % 15];
+                }
             }
             $username.css('color', color);
             $username.html(info['display-name'] ? info['display-name'] : nick);
@@ -459,13 +556,13 @@ Chat = {
     clearChat: function(nick) {
         setTimeout(function() {
             $('.chat_line[data-nick=' + nick + ']').remove();
-        }, 200);
+        }, 100);
     },
 
     clearMessage: function(id) {
         setTimeout(function() {
             $('.chat_line[data-id=' + id + ']').remove();
-        }, 200);
+        }, 100);
     },
 
     connect: function(channel) {
@@ -525,6 +622,20 @@ Chat = {
                                     Chat.loadEmotes(Chat.info.channelID);
                                     console.log('jChat: Refreshing emotes...');
                                     return;
+                                }
+                            }
+
+                            if (message.params[1].toLowerCase() === "!reloadchat" && typeof(message.tags.badges) === 'string') {
+                                var flag = false;
+                                message.tags.badges.split(',').forEach(badge => {
+                                    badge = badge.split('/');
+                                    if (badge[0] === "moderator" || badge[0] === "broadcaster") {
+                                        flag = true;
+                                        return;
+                                    }
+                                });
+                                if (flag) {
+                                    location.reload();
                                 }
                             }
 

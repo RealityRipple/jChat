@@ -9,34 +9,92 @@ function fadeOption(event) {
 }
 
 function sizeUpdate(event) {
-    let size = sizes[Number($size.val()) - 1];
-    removeCSS('size');
-    appendCSS('size', size);
+    $('link[class="size"]').remove();
+    switch($size.val()) {
+        case '1':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "size", href: "styles/size_small.css"}).appendTo("head");
+            break;
+        case '2':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "size", href: "styles/size_medium.css"}).appendTo("head");
+            break;
+        case '3':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "size", href: "styles/size_large.css"}).appendTo("head");
+            break;
+    }
 }
 
 function fontUpdate(event) {
-    let font = fonts[Number($font.val())];
-    removeCSS('font');
-    appendCSS('font', font);
+    $('link[class="font"]').remove();
+    switch($font.val()) {
+        case '0':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_BalooTammudu.css"}).appendTo("head");
+            break;
+        case '1':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_SegoeUI.css"}).appendTo("head");
+            break;
+        case '2':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Roboto.css"}).appendTo("head");
+            break;
+        case '3':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Lato.css"}).appendTo("head");
+            break;
+        case '4':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_NotoSans.css"}).appendTo("head");
+            break;
+        case '5':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_SourceCodePro.css"}).appendTo("head");
+            break;
+        case '6':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Impact.css"}).appendTo("head");
+            break;
+        case '7':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Comfortaa.css"}).appendTo("head");
+            break;
+        case '8':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_DancingScript.css"}).appendTo("head");
+            break;
+        case '9':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_IndieFlower.css"}).appendTo("head");
+            break;
+        case '10':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_PressStart2P.css"}).appendTo("head");
+            break;
+        case '11':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Wallpoet.css"}).appendTo("head");
+            break;
+    }
 }
 
 function strokeUpdate(event) {
-    removeCSS('stroke');
-    if ($stroke.val() == "0")
-        return;
-    else {
-        let stroke = strokes[Number($stroke.val()) - 1];
-        appendCSS('stroke', stroke);
+    $('link[class="stroke"]').remove();
+    switch($stroke.val()) {
+        case '1':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "stroke", href: "styles/stroke_thin.css"}).appendTo("head");
+            break;
+        case '2':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "stroke", href: "styles/stroke_medium.css"}).appendTo("head");
+            break;
+        case '3':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "stroke", href: "styles/stroke_thick.css"}).appendTo("head");
+            break;
+        case '4':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "stroke", href: "styles/stroke_thicker.css"}).appendTo("head");
+            break;
     }
 }
 
 function shadowUpdate(event) {
-    removeCSS('shadow');
-    if ($shadow.val() == "0")
-        return;
-    else {
-        let shadow = shadows[Number($shadow.val()) - 1];
-        appendCSS('shadow', shadow);
+    $('link[class="shadow"]').remove();
+    switch ($shadow.val()) {
+        case '1':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "shadow", href: "styles/shadow_small.css"}).appendTo("head");
+            break;
+        case '2':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "shadow", href: "styles/shadow_medium.css"}).appendTo("head");
+            break;
+        case '3':
+            $("<link/>", {rel: "stylesheet", type: "text/css", class: "shadow", href: "styles/shadow_large.css"}).appendTo("head");
+            break;
     }
 }
 
@@ -50,33 +108,36 @@ function badgesUpdate(event) {
 
 function capsUpdate(event) {
     if ($small_caps.is(':checked')) {
-        appendCSS('variant', 'SmallCaps');
+        $("<link/>", {rel: "stylesheet", type: "text/css", class: "small_caps", href: "styles/variant_SmallCaps.css"}).appendTo("head");
     } else {
-        removeCSS('variant');
+        $('link[class="small_caps"]').remove();
     }
 }
 
 function generateURL(event) {
     event.preventDefault();
 
-    const generatedUrl = 'https://www.giambaj.it/twitch/jchat/v2/?channel=' + $channel.val();
+    var generatedUrl = 'https://uploads.realityripple.com/Projects/Twitch/jChat/v2/?channel=' + $channel.val();
+    if ($animate.is(':checked'))
+        generatedUrl += '&animate=true';
+    if ($bots.is(':checked'))
+        generatedUrl += '&bots=true';
+    if ($fade_bool.is(':checked'))
+        generatedUrl += '&fade=' + $fade.val();
+    if ($commands.is(':checked'))
+        generatedUrl += '&hide_commands=true';
+    if ($badges.is(':checked'))
+        generatedUrl += '&hide_badges=true';
+    generatedUrl += '&size=' + $size.val();
+    generatedUrl += '&font=' + $font.val();
+    if ($stroke.val() != '0')
+        generatedUrl += '&stroke=' + $stroke.val();
+    if ($shadow.val() != '0')
+        generatedUrl += '&shadow=' + $shadow.val();
+    if ($small_caps.is(':checked'))
+        generatedUrl += '&small_caps=true';
 
-    let data = {
-        size: $size.val(),
-        font: $font.val(),
-        stroke: ($stroke.val() != '0' ? $stroke.val() : false),
-        shadow: ($shadow.val() != '0' ? $shadow.val() : false),
-        bots: $bots.is(':checked'),
-        hide_commands: $commands.is(':checked'),
-        hide_badges: $badges.is(':checked'),
-        animate: $animate.is(':checked'),
-        fade: ($fade_bool.is(':checked') ? $fade.val() : false),
-        small_caps: $small_caps.is(':checked')
-    };
-
-    const params = encodeQueryData(data);
-
-    $url.val(generatedUrl + '&' + params);
+    $url.val(generatedUrl);
 
     $generator.addClass('hidden');
     $result.removeClass('hidden');
@@ -108,10 +169,6 @@ function showUrl(event) {
 
 function resetForm(event) {
     $channel.val('');
-    $size.val('3');
-    $font.val('0');
-    $stroke.val('0');
-    $shadow.val('0');
     $bots.prop('checked', false);
     $commands.prop('checked', false);
     $badges.prop('checked', false);
@@ -121,16 +178,8 @@ function resetForm(event) {
     $fade_seconds.addClass('hidden');
     $fade.val("30");
     $small_caps.prop('checked', false);
-
-    sizeUpdate();
-    fontUpdate();
-    strokeUpdate();
-    shadowUpdate();
-    badgesUpdate();
-    capsUpdate();
-    if ($example.hasClass("white"))
-        changePreview();
-
+    $('link[class="small_caps"]').remove();
+    $('img[class="badge special hidden"]').removeClass('hidden');
     $result.addClass('hidden');
     $generator.removeClass('hidden');
     showUrl();
@@ -156,7 +205,9 @@ const $result = $("#result");
 const $url = $('#url');
 const $alert = $("#alert");
 const $reset = $("#reset");
+const $slide = $("#slide");
 
+var slideHover=false;
 $fade_bool.change(fadeOption);
 $size.change(sizeUpdate);
 $font.change(fontUpdate);
@@ -169,3 +220,6 @@ $brightness.click(changePreview);
 $url.click(copyUrl);
 $alert.click(showUrl);
 $reset.click(resetForm);
+$slide.hover(function(){slideHover=true;},function(){slideHover=false;});
+$("#slide > div:gt(0)").hide();
+setInterval(function(){if(!slideHover){$('#slide > div:first').fadeOut(1000).next().fadeIn(1000).end().appendTo('#slide');}},4000);
