@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" class="size" href="styles/size_large.css">
     <link rel="stylesheet" class="font" href="styles/font_BalooTammudu.css">
-    <script src="jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
     <script src="script.js" defer></script>
 </head>
 
@@ -65,6 +65,19 @@
                         </select>
                         <label for="font">Font</label>
                     </div>
+                    <div class="form_row left">
+                        <select name="emoji">
+                            <option value="0" selected>Twemoji</option>
+                            <option value="1">OpenMoji</option>
+                            <option value="2">Noto Color Emoji</option>
+                            <option value="3">Blobmoji</option>
+                            <option value="4">Facebook Emoji</option>
+                            <option value="5">Apple Color Emoji</option>
+                            <option value="6">JoyPixels</option>
+                            <option value="7">Toss Face</option>
+                        </select>
+                        <label for="emoji">Emoji</label>
+                    </div>
                     <br>
                     <div class="form_row left">
                         <input type="checkbox" name="bots">
@@ -101,6 +114,8 @@
                     </div>
                     <br>
                     <div class="form_row right">
+                    </div>
+                    <div class="form_row right">
                         <label for="animate">Animate</label>
                         <input type="checkbox" name="animate">
                     </div>
@@ -121,7 +136,7 @@
                 <div id="example">
                     <div class="chat_line"><span class="user_info"><img class="badge special" src="https://cdn.frankerfacez.com/badge/3/4" style="background-color: rgb(117, 80, 0);"><img class="badge special" src="https://cdn.7tv.app/badge/60d5998fb0ac44b85331fe2b/3x"><img class="badge" src="https://static-cdn.jtvnw.net/badges/v1/3158e758-3cb4-43c5-94b3-7639810451c5/3"><span class="nick" style="color: rgb(38, 255, 0);">giambaJ</span>
                         <span class="colon">:</span>
-                        </span><span class="message"><img class="cheer_emote" src="https://d3aqoihi2n8ty8.cloudfront.net/actions/cheer/dark/animated/100/4.gif"><span class="cheer_bits">100</span> Nice chat <img class="emote" src="https://cdn.betterttv.net/frankerfacez_emote/341767/4">                        <img class="emote" src="https://cdn.7tv.app/emote/60ae4eee5d3fdae58314148d/4x.webp"></span>
+                        </span><span class="message"><img class="cheer_emote" src="https://d3aqoihi2n8ty8.cloudfront.net/actions/cheer/dark/animated/100/4.gif"><span class="cheer_bits">100</span> Nice chat <img class="emote" src="https://cdn.betterttv.net/frankerfacez_emote/341767/4">                        <img class="emote" src="https://cdn.7tv.app/emote/60ae4eee5d3fdae58314148d/4x.webp"></span>                        <img class="emote" id="premoji" src="https://cdn.jsdelivr.net/gh/realityripple/emoji/twemoji/1fae7.png"></span>
                     </div>
                 </div>
                 <input type="submit" value="Generate">

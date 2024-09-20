@@ -48,6 +48,7 @@ Chat = {
         fade: ('fade' in $.QueryString ? parseInt($.QueryString.fade) : false),
         size: ('size' in $.QueryString ? parseInt($.QueryString.size) : 3),
         font: ('font' in $.QueryString ? parseInt($.QueryString.font) : 0),
+        emoji: ('emoji' in $.QueryString ? parseInt($.QueryString.emoji) : 0),
         stroke: ('stroke' in $.QueryString ? parseInt($.QueryString.stroke) : false),
         shadow: ('shadow' in $.QueryString ? parseInt($.QueryString.shadow) : false),
         smallCaps: ('small_caps' in $.QueryString ? ($.QueryString.small_caps.toLowerCase() === 'true') : false),
@@ -533,7 +534,31 @@ Chat = {
                 message = message.replace(regex, replacements[replacementKey]);
             });
 
-            message = twemoji.parse(message);
+            var eFont = 'twemoji';
+            switch (Chat.info.emoji) {
+                case 1:
+                    eFont = 'openmoji';
+                    break;
+                case 2:
+                    eFont = 'noto';
+                    break;
+                case 3:
+                    eFont = 'blob';
+                    break;
+                case 4:
+                    eFont = 'facebook';
+                    break;
+                case 5:
+                    eFont = 'apple';
+                    break;
+                case 6:
+                    eFont = 'joypixels';
+                    break;
+                case 7:
+                    eFont = 'tossface';
+                    break;
+            }
+            message = remoji.parse(message, {font: eFont});
             $message.html(message);
 
             // Writing zero-width emotes

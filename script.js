@@ -65,6 +65,37 @@ function fontUpdate(event) {
     }
 }
 
+function emojiUpdate(event) {
+    var eFont = 'twemoji';
+    switch($emoji.val()) {
+        case '0':
+            eFont = 'twemoji';
+            break;
+        case '1':
+            eFont = 'openmoji';
+            break;
+        case '2':
+            eFont = 'noto';
+            break;
+        case '3':
+            eFont = 'blob';
+            break;
+        case '4':
+            eFont = 'facebook';
+            break;
+        case '5':
+            eFont = 'apple';
+            break;
+        case '6':
+            eFont = 'joypixels';
+            break;
+        case '7':
+            eFont = 'tossface';
+            break;
+    }
+    document.getElementById('premoji').setAttribute('src', 'https://cdn.jsdelivr.net/gh/realityripple/emoji/' + eFont + '/1fae7.png');
+}
+
 function strokeUpdate(event) {
     $('link[class="stroke"]').remove();
     switch($stroke.val()) {
@@ -130,6 +161,7 @@ function generateURL(event) {
         generatedUrl += '&hide_badges=true';
     generatedUrl += '&size=' + $size.val();
     generatedUrl += '&font=' + $font.val();
+    generatedUrl += '&emoji=' + $emoji.val();
     if ($stroke.val() != '0')
         generatedUrl += '&stroke=' + $stroke.val();
     if ($shadow.val() != '0')
@@ -197,6 +229,7 @@ const $small_caps = $("input[name='small_caps']");
 const $badges = $("input[name='badges']");
 const $size = $("select[name='size']");
 const $font = $("select[name='font']");
+const $emoji = $("select[name='emoji']");
 const $stroke = $("select[name='stroke']");
 const $shadow = $("select[name='shadow']");
 const $brightness = $("#brightness");
@@ -211,6 +244,7 @@ var slideHover=false;
 $fade_bool.change(fadeOption);
 $size.change(sizeUpdate);
 $font.change(fontUpdate);
+$emoji.change(emojiUpdate);
 $stroke.change(strokeUpdate);
 $shadow.change(shadowUpdate);
 $small_caps.change(capsUpdate);
