@@ -13,7 +13,7 @@
         }
 
         return params;
-    })(window.location.search.substr(1).split('&'))
+    })(window.location.hash.substr(1).split('&'))
 })(jQuery);
 
 function escapeRegExp(string) {
@@ -30,12 +30,56 @@ function escapeHtml(message) {
 function TwitchAPI(endpoint) {
     return $.ajax({
          beforeSend: function(request) {
-             request.setRequestHeader('Authorization', 'Bearer ' + twAPI_Token);
-             request.setRequestHeader('Client-Id', twAPI_Client);
+             request.setRequestHeader('Authorization', 'Bearer ' + OAuth.token);
+             request.setRequestHeader('Client-Id', OAuth.client);
          },
          dataType: 'json',
          url: 'https://api.twitch.tv/helix' + endpoint
     });
+}
+
+OAuth = {
+    token: false,
+    client: false,
+    channel: false,
+
+    validate: function(token) {
+        return $.ajax({
+             dataType: 'json',
+             url: 'https://id.twitch.tv/oauth2/validate',
+             method: 'GET',
+             beforeSend: function(request) {
+                 request.setRequestHeader('Authorization', 'OAuth ' + token);
+             }
+        });
+    },
+
+    refresh: function(token) {
+        return $.ajax({
+            dataType: 'json',
+            url: '../oauth.php',
+            method: 'POST',
+            data: {'refresh': token}
+       });
+    },
+
+    run: function(token) {
+        OAuth.refresh(token).done(function(oRes) {
+            if (!'access_token' in oRes) {
+                console.log('jChat: OAuth Token Failure');
+                return;
+            }
+            OAuth.validate(oRes.access_token).done(function(vRes) {
+                if (!'client_id' in vRes || !'login' in vRes) {
+                    console.log('jChat: OAuth Validation Failure');
+                    return;
+                }
+                OAuth.client = vRes.client_id;
+                OAuth.token = oRes.access_token;
+                Chat.connect(vRes.login);
+            });
+        });
+    }
 }
 
 Chat = {
@@ -690,5 +734,5 @@ Chat = {
 };
 
 $(document).ready(function() {
-    Chat.connect($.QueryString.channel ? $.QueryString.channel.toLowerCase() : 'giambaj');
+    OAuth.run($.QueryString.channel);
 });

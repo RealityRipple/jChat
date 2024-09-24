@@ -1,3 +1,28 @@
+function authOnTwitch(event) {
+    if (wndT !== false) {
+        wndT.close();
+        wndT = false;
+    }
+    const aURL = window.location.href + 'oauth.php';
+    if (window.top.outerWidth > 600) {
+        const y = window.top.outerHeight / 2 + window.top.screenY - (730 / 2);
+        const x = window.top.outerWidth / 2 + window.top.screenX - (600 / 2);
+        wndT = window.open(aURL, 'wndTwitch', 'popup,top=' + y + ',left=' + x + ',width=600,height=730');
+    }
+    else
+        wndT = window.open(aURL, 'wndTwitch');
+}
+
+function authedOnTwitch(rTok) {
+    $channel.val(rTok);
+    $authorize.attr('disabled', 'disabled');
+    $authorize.attr('value', 'Connected');
+    if (wndT !== false) {
+        wndT.close();
+        wndT = false;
+    }
+}
+
 function fadeOption(event) {
     if ($fade_bool.is(':checked')) {
         $fade.removeClass('hidden');
@@ -148,7 +173,7 @@ function capsUpdate(event) {
 function generateURL(event) {
     event.preventDefault();
 
-    var generatedUrl = 'https://uploads.realityripple.com/Projects/Twitch/jChat/v2/?channel=' + $channel.val();
+    var generatedUrl = 'https://uploads.realityripple.com/Projects/Twitch/jChat/v2/#channel=' + $channel.val();
     if ($animate.is(':checked'))
         generatedUrl += '&animate=true';
     if ($bots.is(':checked'))
@@ -200,6 +225,8 @@ function showUrl(event) {
 }
 
 function resetForm(event) {
+    $authorize.removeAttr('disabled');
+    $authorize.attr('value', 'Log In');
     $channel.val('');
     $bots.prop('checked', false);
     $commands.prop('checked', false);
@@ -218,6 +245,7 @@ function resetForm(event) {
 }
 
 const $generator = $("form[name='generator']");
+const $authorize = $('input[name="authorize"]');
 const $channel = $('input[name="channel"]');
 const $animate = $('input[name="animate"]');
 const $bots = $('input[name="bots"]');
@@ -240,7 +268,9 @@ const $alert = $("#alert");
 const $reset = $("#reset");
 const $slide = $("#slide");
 
+var wndT = false;
 var slideHover=false;
+$authorize.click(authOnTwitch);
 $fade_bool.change(fadeOption);
 $size.change(sizeUpdate);
 $font.change(fontUpdate);
