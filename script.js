@@ -266,10 +266,8 @@ const $result = $("#result");
 const $url = $('#url');
 const $alert = $("#alert");
 const $reset = $("#reset");
-const $slide = $("#slide");
 
 var wndT = false;
-var slideHover=false;
 $authorize.click(authOnTwitch);
 $fade_bool.change(fadeOption);
 $size.change(sizeUpdate);
@@ -284,6 +282,3 @@ $brightness.click(changePreview);
 $url.click(copyUrl);
 $alert.click(showUrl);
 $reset.click(resetForm);
-$slide.hover(function(){slideHover=true;},function(){slideHover=false;});
-$("#slide > div:gt(0)").hide();
-setInterval(function(){if(!slideHover){$('#slide > div:first').fadeOut(1000).next().fadeIn(1000).end().appendTo('#slide');}},4000);
