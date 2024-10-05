@@ -14,9 +14,9 @@ function authOnTwitch(event) {
 }
 
 function authedOnTwitch(rTok) {
-    $channel.val(rTok);
-    $authorize.attr('disabled', 'disabled');
-    $authorize.attr('value', 'Connected');
+    $channel.value = rTok;
+    $authorize.setAttribute('disabled', 'disabled');
+    $authorize.setAttribute('value', 'Connected');
     if (wndT !== false) {
         wndT.close();
         wndT = false;
@@ -24,78 +24,90 @@ function authedOnTwitch(rTok) {
 }
 
 function fadeOption(event) {
-    if ($fade_bool.is(':checked')) {
-        $fade.removeClass('hidden');
-        $fade_seconds.removeClass('hidden');
+    if ($fade_bool.checked) {
+        $fade.classList.remove('hidden');
+        $fade_seconds.classList.remove('hidden');
     } else {
-        $fade.addClass('hidden');
-        $fade_seconds.addClass('hidden');
+        $fade.classList.add('hidden');
+        $fade_seconds.classList.add('hidden');
     }
 }
 
+function makeStyle(sHref, sClass, bErase = true) {
+    if (bErase) {
+        for (const oLnk of document.getElementsByTagName('link')) {
+            if (oLnk.classList.contains(sClass))
+                oLnk.parentElement.removeChild(oLnk);
+        }
+    }
+    if (!sHref)
+        return;
+    const lCSS = document.createElement('link');
+    lCSS.setAttribute('rel', 'stylesheet');
+    lCSS.setAttribute('type', 'text/css');
+    lCSS.setAttribute('class', sClass);
+    lCSS.setAttribute('href', sHref);
+    document.head.appendChild(lCSS);
+}
+
 function sizeUpdate(event) {
-    $('link[class="size"]').remove();
-    switch($size.val()) {
+    switch($size.value) {
         case '1':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "size", href: "styles/size_small.css"}).appendTo("head");
+            makeStyle('styles/size_small.css', 'size');
             break;
         case '2':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "size", href: "styles/size_medium.css"}).appendTo("head");
+            makeStyle('styles/size_medium.css', 'size');
             break;
-        case '3':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "size", href: "styles/size_large.css"}).appendTo("head");
+        default:
+            makeStyle('styles/size_large.css', 'size');
             break;
     }
 }
 
 function fontUpdate(event) {
-    $('link[class="font"]').remove();
-    switch($font.val()) {
-        case '0':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_BalooTammudu.css"}).appendTo("head");
-            break;
+    switch($font.value) {
         case '1':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_SegoeUI.css"}).appendTo("head");
+            makeStyle('styles/font_SegoeUI.css', 'font');
             break;
         case '2':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Roboto.css"}).appendTo("head");
+            makeStyle('styles/font_Roboto.css', 'font');
             break;
         case '3':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Lato.css"}).appendTo("head");
+            makeStyle('styles/font_Lato.css', 'font');
             break;
         case '4':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_NotoSans.css"}).appendTo("head");
+            makeStyle('styles/font_NotoSans.css', 'font');
             break;
         case '5':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_SourceCodePro.css"}).appendTo("head");
+            makeStyle('styles/font_SourceCodePro.css', 'font');
             break;
         case '6':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Impact.css"}).appendTo("head");
+            makeStyle('styles/font_Impact.css', 'font');
             break;
         case '7':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Comfortaa.css"}).appendTo("head");
+            makeStyle('styles/font_Comfortaa.css', 'font');
             break;
         case '8':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_DancingScript.css"}).appendTo("head");
+            makeStyle('styles/font_DancingScript.css', 'font');
             break;
         case '9':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_IndieFlower.css"}).appendTo("head");
+            makeStyle('styles/font_IndieFlower.css', 'font');
             break;
         case '10':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_PressStart2P.css"}).appendTo("head");
+            makeStyle('styles/font_PressStart2P.css', 'font');
             break;
         case '11':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "font", href: "styles/font_Wallpoet.css"}).appendTo("head");
+            makeStyle('styles/font_Wallpoet.css', 'font');
+            break;
+        default:
+            makeStyle('styles/font_BalooTammudu.css', 'font');
             break;
     }
 }
 
 function emojiUpdate(event) {
-    var eFont = 'twemoji';
-    switch($emoji.val()) {
-        case '0':
-            eFont = 'twemoji';
-            break;
+    let eFont = 'twemoji';
+    switch($emoji.value) {
         case '1':
             eFont = 'openmoji';
             break;
@@ -122,163 +134,180 @@ function emojiUpdate(event) {
 }
 
 function strokeUpdate(event) {
-    $('link[class="stroke"]').remove();
-    switch($stroke.val()) {
+    switch($stroke.value) {
         case '1':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "stroke", href: "styles/stroke_thin.css"}).appendTo("head");
+            makeStyle('styles/stroke_thin.css', 'stroke');
             break;
         case '2':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "stroke", href: "styles/stroke_medium.css"}).appendTo("head");
+            makeStyle('styles/stroke_medium.css', 'stroke');
             break;
         case '3':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "stroke", href: "styles/stroke_thick.css"}).appendTo("head");
+            makeStyle('styles/stroke_thick.css', 'stroke');
             break;
         case '4':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "stroke", href: "styles/stroke_thicker.css"}).appendTo("head");
+            makeStyle('styles/stroke_thicker.css', 'stroke');
+            break;
+        default:
+            makeStyle(false, 'stroke');
             break;
     }
 }
 
 function shadowUpdate(event) {
-    $('link[class="shadow"]').remove();
-    switch ($shadow.val()) {
+    switch ($shadow.value) {
         case '1':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "shadow", href: "styles/shadow_small.css"}).appendTo("head");
+            makeStyle('styles/shadow_small.css', 'shadow');
             break;
         case '2':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "shadow", href: "styles/shadow_medium.css"}).appendTo("head");
+            makeStyle('styles/shadow_medium.css', 'shadow');
             break;
         case '3':
-            $("<link/>", {rel: "stylesheet", type: "text/css", class: "shadow", href: "styles/shadow_large.css"}).appendTo("head");
+            makeStyle('styles/shadow_large.css', 'shadow');
+            break;
+        default:
+            makeStyle(false, 'shadow');
             break;
     }
 }
 
 function badgesUpdate(event) {
-    if ($badges.is(':checked')) {
-        $('img[class="badge special"]').addClass('hidden');
+    if ($badges.checked) {
+        for (const spBadge of document.getElementsByTagName('img')) {
+            if (spBadge.classList.contains('badge') && spBadge.classList.contains('special'))
+                spBadge.classList.add('hidden');
+        }
     } else {
-        $('img[class="badge special hidden"]').removeClass('hidden');
+        for (const spBadge of document.getElementsByTagName('img')) {
+            if (spBadge.classList.contains('badge') &&  spBadge.classList.contains('special') && spBadge.classList.contains('hidden'))
+                spBadge.classList.remove('hidden');
+        }
     }
 }
 
 function capsUpdate(event) {
-    if ($small_caps.is(':checked')) {
-        $("<link/>", {rel: "stylesheet", type: "text/css", class: "small_caps", href: "styles/variant_SmallCaps.css"}).appendTo("head");
+    if ($small_caps.checked) {
+        makeStyle('styles/variant_SmallCaps.css', 'small_caps');
     } else {
-        $('link[class="small_caps"]').remove();
+        makeStyle(false, 'small_caps');
     }
 }
 
 function generateURL(event) {
     event.preventDefault();
 
-    var generatedUrl = 'https://uploads.realityripple.com/Projects/Twitch/jChat/v2/#channel=' + $channel.val();
-    if ($animate.is(':checked'))
+    let generatedUrl = 'https://uploads.realityripple.com/Projects/Twitch/jChat/v2/#channel=' + $channel.value;
+    if ($animate.checked)
         generatedUrl += '&animate=true';
-    if ($bots.is(':checked'))
+    if ($bots.checked)
         generatedUrl += '&bots=true';
-    if ($fade_bool.is(':checked'))
-        generatedUrl += '&fade=' + $fade.val();
-    if ($commands.is(':checked'))
+    if ($fade_bool.checked)
+        generatedUrl += '&fade=' + $fade.value;
+    if ($commands.checked)
         generatedUrl += '&hide_commands=true';
-    if ($badges.is(':checked'))
+    if ($badges.checked)
         generatedUrl += '&hide_badges=true';
-    generatedUrl += '&size=' + $size.val();
-    generatedUrl += '&font=' + $font.val();
-    generatedUrl += '&emoji=' + $emoji.val();
-    if ($stroke.val() != '0')
-        generatedUrl += '&stroke=' + $stroke.val();
-    if ($shadow.val() != '0')
-        generatedUrl += '&shadow=' + $shadow.val();
-    if ($small_caps.is(':checked'))
+    generatedUrl += '&size=' + $size.value;
+    generatedUrl += '&font=' + $font.value;
+    generatedUrl += '&emoji=' + $emoji.value;
+    if ($stroke.value != '0')
+        generatedUrl += '&stroke=' + $stroke.value;
+    if ($shadow.value != '0')
+        generatedUrl += '&shadow=' + $shadow.value;
+    if ($small_caps.checked)
         generatedUrl += '&small_caps=true';
 
-    $url.val(generatedUrl);
+    $url.setAttribute('value', generatedUrl);
 
-    $generator.addClass('hidden');
-    $result.removeClass('hidden');
+    $generator.classList.add('hidden');
+    $result.classList.remove('hidden');
 }
 
 function changePreview(event) {
-    if ($example.hasClass("white")) {
-        $example.removeClass("white");
-        $brightness.attr('src', "img/light.png");
+    if ($example.classList.contains('white')) {
+        $example.classList.remove('white');
+        $brightness.setAttribute('src', 'img/light.png');
     } else {
-        $example.addClass("white");
-        $brightness.attr('src', "img/dark.png");
+        $example.classList.add('white');
+        $brightness.setAttribute('src', 'img/dark.png');
     }
 }
 
 function copyUrl(event) {
-    navigator.clipboard.writeText($url.val());
+    navigator.clipboard.writeText($url.value);
 
-    $alert.css('visibility', 'visible');
-    $alert.css('opacity', '1');
+    $alert.style.visibility = 'visible';
+    $alert.style.opacity = 1;
 }
 
 function showUrl(event) {
-    $alert.css('opacity', '0');
+    $alert.style.opacity = 0;
     setTimeout(function() {
-        $alert.css('visibility', 'hidden');
+        $alert.style.visibility = 'hidden';
     }, 200);
 }
 
 function resetForm(event) {
-    $authorize.removeAttr('disabled');
-    $authorize.attr('value', 'Log In');
-    $channel.val('');
-    $bots.prop('checked', false);
-    $commands.prop('checked', false);
-    $badges.prop('checked', false);
-    $animate.prop('checked', false);
-    $fade_bool.prop('checked', false);
-    $fade.addClass('hidden');
-    $fade_seconds.addClass('hidden');
-    $fade.val("30");
-    $small_caps.prop('checked', false);
-    $('link[class="small_caps"]').remove();
-    $('img[class="badge special hidden"]').removeClass('hidden');
-    $result.addClass('hidden');
-    $generator.removeClass('hidden');
+    $authorize.removeAttribute('disabled');
+    $authorize.setAttribute('value', 'Log In');
+    $channel.value = '';
+    $bots.checked = false;
+    $commands.checked = false;
+    $badges.checked = false;
+    $animate.checked = false;
+    $fade_bool.checked = false;
+    $fade.classList.add('hidden');
+    $fade_seconds.classList.add('hidden');
+    $fade.value = 30;
+    $small_caps.checked = false;
+    for (const capLnk of document.getElementsByTagName('link')) {
+        if (capLnk.classList.contains('small_caps'))
+            capLnk.parentElement.removeChild(capLnk);
+    }
+    for (const spBadge of document.getElementsByTagName('img')) {
+        if (spBadge.classList.contains('badge') && spBadge.classList.contains('special') && spBadge.classList.contains('hidden'))
+            spBadge.classList.remove('hidden');
+    }
+    $result.classList.add('hidden');
+    $generator.classList.remove('hidden');
     showUrl();
 }
 
-const $generator = $("form[name='generator']");
-const $authorize = $('input[name="authorize"]');
-const $channel = $('input[name="channel"]');
-const $animate = $('input[name="animate"]');
-const $bots = $('input[name="bots"]');
-const $fade_bool = $("input[name='fade_bool']");
-const $fade = $("input[name='fade']");
-const $fade_seconds = $("#fade_seconds");
-const $commands = $("input[name='commands']");
-const $small_caps = $("input[name='small_caps']");
-const $badges = $("input[name='badges']");
-const $size = $("select[name='size']");
-const $font = $("select[name='font']");
-const $emoji = $("select[name='emoji']");
-const $stroke = $("select[name='stroke']");
-const $shadow = $("select[name='shadow']");
-const $brightness = $("#brightness");
-const $example = $('#example');
-const $result = $("#result");
-const $url = $('#url');
-const $alert = $("#alert");
-const $reset = $("#reset");
+const $generator = document.getElementsByName('generator')[0];
+const $authorize = document.getElementsByName('authorize')[0];
+const $channel = document.getElementsByName('channel')[0];
+const $animate = document.getElementsByName('animate')[0];
+const $bots = document.getElementsByName('bots')[0];
+const $fade_bool = document.getElementsByName('fade_bool')[0];
+const $fade = document.getElementsByName('fade')[0];
+const $fade_seconds = document.getElementById('fade_seconds');
+const $commands = document.getElementsByName('commands')[0];
+const $small_caps = document.getElementsByName('small_caps')[0];
+const $badges = document.getElementsByName('badges')[0];
+const $size = document.getElementsByName('size')[0];
+const $font = document.getElementsByName('font')[0];
+const $emoji = document.getElementsByName('emoji')[0];
+const $stroke = document.getElementsByName('stroke')[0];
+const $shadow = document.getElementsByName('shadow')[0];
+const $brightness = document.getElementById('brightness');
+const $example = document.getElementById('example');
+const $result = document.getElementById('result');
+const $url = document.getElementById('url');
+const $alert = document.getElementById('alert');
+const $reset = document.getElementById('reset');
 
 var wndT = false;
-$authorize.click(authOnTwitch);
-$fade_bool.change(fadeOption);
-$size.change(sizeUpdate);
-$font.change(fontUpdate);
-$emoji.change(emojiUpdate);
-$stroke.change(strokeUpdate);
-$shadow.change(shadowUpdate);
-$small_caps.change(capsUpdate);
-$badges.change(badgesUpdate);
-$generator.submit(generateURL);
-$brightness.click(changePreview);
-$url.click(copyUrl);
-$alert.click(showUrl);
-$reset.click(resetForm);
+var slideHover=false;
+$authorize.addEventListener('click', authOnTwitch);
+$fade_bool.addEventListener('change', fadeOption);
+$size.addEventListener('change', sizeUpdate);
+$font.addEventListener('change', fontUpdate);
+$emoji.addEventListener('change', emojiUpdate);
+$stroke.addEventListener('change', strokeUpdate);
+$shadow.addEventListener('change', shadowUpdate);
+$small_caps.addEventListener('change', capsUpdate);
+$badges.addEventListener('change', badgesUpdate);
+$generator.addEventListener('submit', generateURL);
+$brightness.addEventListener('click', changePreview);
+$url.addEventListener('click', copyUrl);
+$alert.addEventListener('click', showUrl);
+$reset.addEventListener('click', resetForm);
