@@ -711,6 +711,16 @@ Chat = {
         Chat.info.lines.push($chatLine.outerHTML);
     },
 
+    clearAll: function() {
+        setTimeout(function() {
+            const chatLines = document.getElementsByClassName('chat_line');
+            for (let i = chatLines.length - 1; i >= 0; i--) {
+                if (!chatLines[i].parentElement) continue;
+                chatLines[i].parentElement.removeChild(chatLines[i]);
+            }
+        }, 100);
+    },
+
     clearChat: function(nick) {
         setTimeout(function() {
             const chatLines = document.querySelectorAll('.chat_line[data-nick="' + nick + '"]');
@@ -768,7 +778,10 @@ Chat = {
                             if (message.tags) Chat.clearMessage(message.tags['target-msg-id']);
                             return;
                         case "CLEARCHAT":
-                            if (message.params[1]) Chat.clearChat(message.params[1]);
+                            if (message.params[1])
+                                Chat.clearChat(message.params[1]);
+                            else
+                                Chat.clearAll();
                             return;
                         case "PRIVMSG":
                             if (message.params[0] !== '#' + channel || !message.params[1]) return;
