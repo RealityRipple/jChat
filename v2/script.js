@@ -687,6 +687,12 @@ Chat = {
             case 7:
                 eFont = 'tossface';
                 break;
+            case 8:
+                eFont = 'whatsapp';
+                break;
+            case 9:
+                eFont = 'oneui';
+                break;
         }
         message = remoji.parse(message, {font: eFont});
         $message.innerHTML = message;

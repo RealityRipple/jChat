@@ -129,6 +129,12 @@ function emojiUpdate(event) {
         case '7':
             eFont = 'tossface';
             break;
+        case '8':
+            eFont = 'whatsapp';
+            break;
+        case '9':
+            eFont = 'oneui';
+            break;
     }
     document.getElementById('premoji').setAttribute('src', 'https://cdn.jsdelivr.net/gh/realityripple/emoji/' + eFont + '/1fae7.png');
 }
