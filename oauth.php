@@ -185,6 +185,13 @@ PAGE;
          showFailure(json_encode(array('status' => 400, 'message' => 'Scopes are not allowed')));
          exit();
      }
+     if (array_key_exists('access_token', $j)) {
+         $v = getUserID($j['access_token']);
+         if ($v !== false && array_key_exists('user_id', $v)) {
+             require_once(posix_getpwuid(posix_getuid())['dir'].'/rrs/inc/users/usercount.php.inc');
+             recordUser('TJC', $v['user_id']);
+         }
+     }
      echo $buffer;
      exit();
  }
