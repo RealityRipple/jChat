@@ -13,10 +13,16 @@ function authOnTwitch(event) {
         wndT = window.open(aURL, 'wndTwitch');
 }
 
-function authedOnTwitch(rTok) {
-    $channel.value = rTok;
+function authedOnTwitch(rTok, uName) {
+    $token.value = rTok;
     $authorize.setAttribute('disabled', 'disabled');
     $authorize.setAttribute('value', 'Connected');
+    if (!!uName) {
+        $channel.setAttribute('readonly', 'readonly');
+        $channel.value = uName;
+        $channel.setAttribute('style', 'position: absolute;');
+        $authorize.setAttribute('style', 'z-index: -1; opacity: 0; position: absolute;');
+    }
     if (wndT !== false) {
         wndT.close();
         wndT = false;
@@ -201,7 +207,7 @@ function capsUpdate(event) {
 function generateURL(event) {
     event.preventDefault();
 
-    let generatedUrl = 'https://jchat.realityripple.com/v2/#channel=' + $channel.value;
+    let generatedUrl = 'https://jchat.realityripple.com/v2/#channel=' + $token.value;
     if ($animate.checked)
         generatedUrl += '&animate=true';
     if ($bots.checked)
@@ -255,7 +261,10 @@ function showUrl(event) {
 function resetForm(event) {
     $authorize.removeAttribute('disabled');
     $authorize.setAttribute('value', 'Log In');
+    $authorize.removeAttribute('style');
     $channel.value = '';
+    $channel.setAttribute('style', 'z-index: -1; opacity: 0; position: absolute;');
+    $token.value = '';
     $bots.checked = false;
     $commands.checked = false;
     $badges.checked = false;
@@ -281,6 +290,7 @@ function resetForm(event) {
 const $generator = document.getElementsByName('generator')[0];
 const $authorize = document.getElementsByName('authorize')[0];
 const $channel = document.getElementsByName('channel')[0];
+const $token = document.getElementsByName('token')[0];
 const $animate = document.getElementsByName('animate')[0];
 const $bots = document.getElementsByName('bots')[0];
 const $fade_bool = document.getElementsByName('fade_bool')[0];
@@ -303,6 +313,9 @@ const $reset = document.getElementById('reset');
 
 var wndT = false;
 var slideHover=false;
+$token.value = '';
+$channel.value = '';
+$authorize.removeAttribute('disabled');
 $authorize.addEventListener('click', authOnTwitch);
 $fade_bool.addEventListener('change', fadeOption);
 $size.addEventListener('change', sizeUpdate);

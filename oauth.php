@@ -86,7 +86,7 @@ PAGE;
      echo $contents;
  }
 
- function showSuccess($rTok) {
+ function showSuccess($rTok, $uName) {
      $contents = <<<PAGE
 <!doctype html>
 <html lang="en">
@@ -99,7 +99,7 @@ PAGE;
     font-size: 150%;
    }
   </style>
-  <script>window.opener.authedOnTwitch('%REFRESH_TOKEN%');</script>
+  <script>window.opener.authedOnTwitch('%REFRESH_TOKEN%', '%CHANNEL_LOGIN%');</script>
  </head>
  <body>
   <p>Thank you for authenticating! This window should close in a moment.</p>
@@ -107,6 +107,7 @@ PAGE;
 </html>
 PAGE;
      $contents = str_replace('%REFRESH_TOKEN%', $rTok, $contents);
+     $contents = str_replace('%CHANNEL_LOGIN%', $uName, $contents);
      echo $contents;
  }
 
@@ -147,7 +148,15 @@ PAGE;
          showFailure('Scopes are not allowed!');
          exit();
      }
-     showSuccess($j['refresh_token']);
+     $v = getUserID($j['access_token']);
+     if ($v === false) {
+         showFailure('Received Token not valid.');
+         exit();
+     }
+     $chLogin = false;
+     if (array_key_exists('login', $v))
+         $chLogin = $v['login'];
+     showSuccess($j['refresh_token'], $chLogin);
  }
 
  function parseRefresh($token) {
@@ -178,6 +187,28 @@ PAGE;
      }
      echo $buffer;
      exit();
+ }
+
+ function getUserID($token) {
+     $url = 'https://id.twitch.tv/oauth2/validate';
+     $hHdrs = array();
+     $hHdrs[] = 'Client-Id: '.urlencode($GLOBALS['api']['client_id']);
+     $hHdrs[] = 'Authorization: Bearer '.urlencode($token);
+     $ch = curl_init();
+     curl_setopt($ch, CURLOPT_URL, $url);
+     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 15);
+     curl_setopt($ch, CURLOPT_TIMEOUT, 45);
+     curl_setopt($ch, CURLOPT_HTTPHEADER, $hHdrs);
+     $buffer = curl_exec($ch);
+     if ($buffer === false)
+         return false;
+     unset($ch);
+     $j = json_decode($buffer, true);
+     if ($j === null)
+         return false;
+     return $j;
  }
 
  function redirectTo($redirURI) {
