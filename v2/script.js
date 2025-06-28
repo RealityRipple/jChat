@@ -430,11 +430,11 @@ Chat = {
                 selLine.style.opacity = 1;
                 selLine.style.transition = 'opacity 400ms linear';
                 window.requestAnimationFrame(function() { window.requestAnimationFrame(function() {
-                    if (chatLines.length < 1)
+                    if (selLine.parentElement === null)
                         return;
                     selLine.style.opacity = 0;
                     window.setTimeout(function() {
-                        if (chatLines.length < 1)
+                        if (selLine.parentElement === null)
                             return;
                         selLine.parentElement.removeChild(selLine);
                     }, 400);
