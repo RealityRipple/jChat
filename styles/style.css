@@ -341,7 +341,7 @@ input[type="button"]:hover {
     margin: 15px;
 }
 
-#paypal {
+#paypal, #donate {
     width: 100px;
     height: 25px;
     border-radius: 20px;
