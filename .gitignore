@@ -1,5 +1,7 @@
 credentials.json
 favicon.ico
+.user.ini
+.htaccess
 backups/
 t/
 .vscode
