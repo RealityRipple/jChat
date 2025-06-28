@@ -201,7 +201,7 @@ function capsUpdate(event) {
 function generateURL(event) {
     event.preventDefault();
 
-    let generatedUrl = 'https://uploads.realityripple.com/Projects/Twitch/jChat/v2/#channel=' + $channel.value;
+    let generatedUrl = 'https://jchat.realityripple.com/v2/#channel=' + $channel.value;
     if ($animate.checked)
         generatedUrl += '&animate=true';
     if ($bots.checked)
