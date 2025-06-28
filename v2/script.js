@@ -377,6 +377,28 @@ Chat = {
                 });
             });
 
+            // Load channel bot list
+            if (!Chat.info.showBots) {
+                ajax('https://api.frankerfacez.com/v1/room/id/' + Chat.info.channelID)
+                    .then(function(res) {
+                        if (!!res.json && res.json.hasOwnProperty('room') && res.json.room.hasOwnProperty('user_badges') && res.json.room.user_badges.hasOwnProperty('2') && Array.isArray(res.json.room.user_badges['2']) && res.json.room.user_badges['2'].length > 0) {
+                            for (let i = 0; i < res.json.room.user_badges['2'].length; i++) {
+                                if (!Chat.info.bots.includes(res.json.room.user_badges['2'][i]))
+                                    Chat.info.bots.push(res.json.room.user_badges['2'][i]);
+                            }
+                        }
+                    });
+                ajax('https://api.betterttv.net/3/cached/users/twitch/' + Chat.info.channelID)
+                    .then(function(res) {
+                        if (!!res.json && res.json.hasOwnProperty('bots') && Array.isArray(res.json.bots) && res.json.bots.length > 0) {
+                            for (let i = 0; i < res.json.bots.length; i++) {
+                                if (!Chat.info.bots.includes(res.json.bots[i]))
+                                    Chat.info.bots.push(res.json.bots[i]);
+                            }
+                        }
+                    });
+            }
+
             callback(true);
         });
     },
