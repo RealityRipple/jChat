@@ -287,6 +287,61 @@ input[type="button"]:hover {
     opacity: 1;
 }
 
+.moreinfo {
+    display: inline-block;
+    position: relative;
+    font-size: 50%;
+    border: 1px solid rgb(255, 255, 255);
+    border-radius: 0.8em;
+    width: 1.3em;
+    height: 1.3em;
+    text-align: center;
+    margin-left: 6px;
+    cursor: help;
+}
+
+.moreinfo.focus {
+    color: rgba(130, 240, 255);
+    border-color: rgba(130, 240, 255);
+}
+
+.moreinfo .tooltip {
+    visibility: hidden;
+    font-size: 115%;
+    font-weight: bold;
+    width: 640px;
+    background-color: rgb(85, 85, 85);
+    color: rgb(255, 255, 255);
+    text-align: center;
+    border-radius: 12px;
+    padding: 5px 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 200%;
+    left: 50%;
+    margin-left: -328px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    cursor: default;
+    user-select: none;
+}
+
+.moreinfo .tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -16px;
+    border-width: 16px;
+    border-style: solid;
+    border-color: rgb(85, 85, 85) transparent transparent transparent;
+}
+
+.moreinfo.focus .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
 #result {
     position: relative;
     width: 950px;
