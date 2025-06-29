@@ -142,6 +142,10 @@ input[type="text"].short {
     font-size: 0.8em;
 }
 
+input[type="text"]:read-only {
+    background-color: rgb(160, 160, 160);
+}
+
 input[type="checkbox"] {
     font-size: 17px;
     -webkit-appearance: none;
