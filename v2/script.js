@@ -245,7 +245,9 @@ Chat = {
 
         ajax('https://7tv.io/v3/emote-sets/global').then((res) => {
             res.json?.emotes?.forEach(emote => {
-                const emoteData = emote.data.host.files.pop();
+                let emoteData = emote.data.host.files.pop();
+                while (emoteData.format !== 'WEBP')
+                    emoteData = emote.data.host.files.pop();
                 Chat.info.emotes[emote.name] = {
                     id: emote.id,
                     image: `https:${emote.data.host.url}/${emoteData.name}`,
@@ -256,7 +258,9 @@ Chat = {
 
         ajax('https://7tv.io/v3/users/twitch/' + encodeURIComponent(channelID)).then((res) => {
             res.json?.emote_set?.emotes?.forEach(emote => {
-                const emoteData=emote.data.host.files.pop();
+                let emoteData = emote.data.host.files.pop();
+                while (emoteData.format !== 'WEBP')
+                    emoteData = emote.data.host.files.pop();
                 Chat.info.emotes[emote.name] = {
                     id: emote.id,
                     image: `https:${emote.data.host.url}/${emoteData.name}`,
