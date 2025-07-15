@@ -766,18 +766,38 @@ Chat = {
         $message.innerHTML = message;
 
         // Writing zero-width emotes
-        messageNodes = $message.children;
+        const messageNodes = [];
+        for (let i = 0, l = $message.childNodes.length; i < l; i++) {
+           if ($message.childNodes[i].nodeType === Node.ELEMENT_NODE)
+               messageNodes.push($message.childNodes[i]);
+           if ($message.childNodes[i].nodeType === Node.TEXT_NODE && $message.childNodes[i].nodeValue !== ' ')
+               messageNodes.push($message.childNodes[i]);
+        }
         for (let i = 1; i < messageNodes.length; i++) {
-            if (messageNodes[i].dataset.zw && (messageNodes[i - 1].classList.contains('emote') || messageNodes[i - 1].classList.contains('emoji')) && !messageNodes[i - 1].dataset.zw) {
+            if (messageNodes[i - 1].nodeType === Node.TEXT_NODE)
+                continue;
+            if (messageNodes[i].nodeType === Node.TEXT_NODE)
+                continue;
+            if (!messageNodes[i].dataset.zw)
+                continue;
+            const $preNode = messageNodes[i - 1];
+            const $curNode = messageNodes[i];
+            if ($curNode.previousSibling !== null && $curNode.previousSibling.nodeType === Node.TEXT_NODE && $curNode.previousSibling.nodeValue === ' ')
+                $curNode.previousSibling.remove();
+            $curNode.remove();
+            $curNode.classList.add('zero-width');
+            if ($preNode.classList.contains('zero-width_container')) {
+                $preNode.append($curNode);
+                continue;
+            }
+            if (!$preNode.dataset.zw && ($preNode.classList.contains('emote') || $preNode.classList.contains('emoji'))) {
                 const $container = document.createElement('span');
                 $container.classList.add('zero-width_container');
-                messageNodes[i].classList.add('zero-width');
-                messageNodes[i].parentElement.insertBefore($container, messageNodes[i]);
-                $container.append(messageNodes[i].parentElement.removeChild(messageNodes[i - 1]), messageNodes[i].parentElement.removeChild(messageNodes[i]));
+                $preNode.replaceWith($container);
+                $container.append($preNode, $curNode);
+                messageNodes[i - 1] = $container;
+                messageNodes.splice(i, 1);
                 i--;
-            } else if (messageNodes[i].dataset.zw && messageNodes[i - 1].classList.contains('zero-width_container')) {
-                messageNodes[i].classList.add('zero-width');
-                messageNodes[i - 1].append(messageNodes[i].parentElement.removeChild(messageNodes[i]));
             }
         }
         $message.innerHTML = $message.innerHTML.trim();
