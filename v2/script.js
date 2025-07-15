@@ -161,37 +161,83 @@ Chat = {
     loadEmotes: function(channelID) {
         Chat.info.emotes = {};
         // Load BTTV, FFZ and 7TV emotes
-        ['emotes/global', 'users/twitch/' + encodeURIComponent(channelID)].forEach(endpoint => {
-            ajax('https://api.betterttv.net/3/cached/frankerfacez/' + endpoint).then(function(res) {
-                res.json?.forEach(emote => {
-                    let imageUrl, upscale;
-                    if (emote.images['4x']) {
-                        imageUrl = emote.images['4x'];
-                        upscale = false;
-                    } else {
-                        imageUrl = emote.images['2x'] || emote.images['1x'];
-                        upscale = true;
-                    }
-                    Chat.info.emotes[emote.code] = {
-                        id: emote.id,
-                        image: imageUrl,
-                        upscale: upscale
-                    };
-                });
+        ['set/global', 'room/id/' + encodeURIComponent(channelID)].forEach(endpoint => {
+            ajax('https://api.frankerfacez.com/v1/' + endpoint).then(function(res) {
+                if (!res.json)
+                    return;
+                res = res.json;
+                let useSets = [];
+                if (res.hasOwnProperty('default_sets'))
+                    useSets = res.default_sets;
+                if (!res.hasOwnProperty('sets'))
+                    return;
+                for (const t in res.sets) {
+                    if (!res.sets.hasOwnProperty(t))
+                        continue;
+                    if (useSets.length > 0 && !useSets.includes(res.sets[t].id))
+                        continue;
+                    if (!res.sets[t].hasOwnProperty('emoticons'))
+                        continue;
+                    res.sets[t].emoticons.forEach(icon => {
+                        if (!icon.hasOwnProperty('id'))
+                            return;
+                        if (!icon.hasOwnProperty('name'))
+                            return;
+                        let imageUrl, upscale;
+                        const groups = ['animated', 'urls'];
+                        const sizes = ['4', '2', '1'];
+                        for (const grp of groups) {
+                            if (!icon.hasOwnProperty(grp))
+                                continue;
+                            for (const sz of sizes) {
+                                if (!icon[grp].hasOwnProperty(sz))
+                                    continue;
+                                imageUrl = icon[grp][sz];
+                                upscale = false;
+                                break;
+                            }
+                            if (imageUrl)
+                                break;
+                        }
+                        if (!imageUrl)
+                            return;
+                        let zw = icon.hasOwnProperty('modifier') && icon.modifier === true;
+                        if (icon.hasOwnProperty('modifier_flags') && (icon.modifier_flags & 0x01) === 0x01)
+                            zw = false;
+                        Chat.info.emotes[icon.name] = {
+                            id: icon.id,
+                            image: imageUrl,
+                            upscale: upscale,
+                            zeroWidth: zw
+                        };
+                    });
+                }
             });
         });
 
         ['emotes/global', 'users/twitch/' + encodeURIComponent(channelID)].forEach(endpoint => {
             ajax('https://api.betterttv.net/3/cached/' + endpoint).then(function(res) {
+                if (!res.json)
+                    return;
+                const zwl = ['5e76d338d6581c3724c0f0b2', '5e76d399d6581c3724c0f0b8', '567b5b520e984428652809b6', '5849c9a4f52be01a7ee5f79d', '567b5c080e984428652809ba', '567b5dc00e984428652809bd', '58487cc6f52be01a7ee5f205', '5849c9c8f52be01a7ee5f79e']; // '5e76d338d6581c3724c0f0b2' => cvHazmat, '5e76d399d6581c3724c0f0b8' => cvMask, '567b5b520e984428652809b6' => SoSnowy, '5849c9a4f52be01a7ee5f79d' => IceCold, '567b5c080e984428652809ba' => CandyCane, '567b5dc00e984428652809bd' => ReinDeer, '58487cc6f52be01a7ee5f205' => SantaHat, '5849c9c8f52be01a7ee5f79e' => TopHat
                 res = res.json;
                 if (!Array.isArray(res)) {
-                    res = res.channelEmotes.concat(res.sharedEmotes);
+                    const lst = [];
+                    if (res.hasOwnProperty('channelEmotes'))
+                        lst.push(...res.channelEmotes);
+                    if (res.hasOwnProperty('sharedEmotes'))
+                        lst.push(...res.sharedEmotes);
+                    res = lst;
                 }
                 res.forEach(emote => {
+                    if (!emote.hasOwnProperty('id'))
+                        return;
+                    if (!emote.hasOwnProperty('code'))
+                        return;
                     Chat.info.emotes[emote.code] = {
                         id: emote.id,
                         image: 'https://cdn.betterttv.net/emote/' + emote.id + '/3x',
-                        zeroWidth: ['5e76d338d6581c3724c0f0b2', '5e76d399d6581c3724c0f0b8', '567b5b520e984428652809b6', '5849c9a4f52be01a7ee5f79d', '567b5c080e984428652809ba', '567b5dc00e984428652809bd', '58487cc6f52be01a7ee5f205', '5849c9c8f52be01a7ee5f79e'].includes(emote.id) // '5e76d338d6581c3724c0f0b2' => cvHazmat, '5e76d399d6581c3724c0f0b8' => cvMask, '567b5b520e984428652809b6' => SoSnowy, '5849c9a4f52be01a7ee5f79d' => IceCold, '567b5c080e984428652809ba' => CandyCane, '567b5dc00e984428652809bd' => ReinDeer, '58487cc6f52be01a7ee5f205' => SantaHat, '5849c9c8f52be01a7ee5f79e' => TopHat
+                        zeroWidth: zwl.includes(emote.id)
                     };
                 });
             });
@@ -203,7 +249,7 @@ Chat = {
                 Chat.info.emotes[emote.name] = {
                     id: emote.id,
                     image: `https:${emote.data.host.url}/${emoteData.name}`,
-                    zeroWidth: emote.data.flags == 256,
+                    zeroWidth: (emote.data.flags & 0x100) === 0x100,
                 }
             })
         })
@@ -214,7 +260,7 @@ Chat = {
                 Chat.info.emotes[emote.name] = {
                     id: emote.id,
                     image: `https:${emote.data.host.url}/${emoteData.name}`,
-                    zeroWidth: emote.data.flags == 256,
+                    zeroWidth: (emote.data.flags & 0x100) === 0x100,
                 }
             })
         })
