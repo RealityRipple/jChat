@@ -502,11 +502,11 @@ Chat = {
                 selLine.style.opacity = 1;
                 selLine.style.transition = 'opacity 400ms linear';
                 window.requestAnimationFrame(function() { window.requestAnimationFrame(function() {
-                    if (selLine.parentElement === null)
+                    if (chatLines.length < 1)
                         return;
                     selLine.style.opacity = 0;
                     window.setTimeout(function() {
-                        if (selLine.parentElement === null)
+                        if (chatLines.length < 1)
                             return;
                         selLine.parentElement.removeChild(selLine);
                     }, 400);
