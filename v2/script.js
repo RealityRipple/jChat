@@ -466,7 +466,7 @@ Chat = {
                 $auxDiv.innerHTML = lines;
                 chatDiv.append($auxDiv);
                 const auxHeight = $auxDiv.clientHeight;
-                chatDiv.removeChild($auxDiv);
+                $auxDiv.remove();
 
                 const $animDiv = document.createElement('div');
                 //$animDiv.innerHTML = ' ';
@@ -476,7 +476,7 @@ Chat = {
                 window.requestAnimationFrame(function() { window.requestAnimationFrame(function() {
                     $animDiv.style.height = auxHeight + 'px';
                     window.setTimeout(function() {
-                        chatDiv.removeChild($animDiv);
+                        $animDiv.remove();
                         chatDiv.innerHTML += lines;
                     }, 150);
                 }); });
@@ -485,7 +485,7 @@ Chat = {
             }
             Chat.info.lines = [];
             while (chatLines.length > 99) {
-                chatLines[0].parentElement.removeChild(chatLines[0]);
+                chatLines[0].remove();
             }
         } else if (Chat.info.fade) {
             let selLine;
@@ -502,13 +502,9 @@ Chat = {
                 selLine.style.opacity = 1;
                 selLine.style.transition = 'opacity 400ms linear';
                 window.requestAnimationFrame(function() { window.requestAnimationFrame(function() {
-                    if (chatLines.length < 1)
-                        return;
                     selLine.style.opacity = 0;
                     window.setTimeout(function() {
-                        if (chatLines.length < 1)
-                            return;
-                        selLine.parentElement.removeChild(selLine);
+                        selLine.remove();
                     }, 400);
                 }); });
             }
@@ -631,7 +627,7 @@ Chat = {
                     if (badge.color) $badge.setAttribute('style', 'background-color: ' + badge.color);
                     if (badge.description === 'Bot' && info.mod === '1') {
                         $badge.setAttribute('style', 'background-color: rgb(0, 173, 3)');
-                        $modBadge.parentElement.removeChild($modBadge);
+                        $modBadge.remove();
                     }
                     $badge.setAttribute('src', badge.url);
                     $userInfo.append($badge);
@@ -793,8 +789,7 @@ Chat = {
         setTimeout(function() {
             const chatLines = document.getElementsByClassName('chat_line');
             for (let i = chatLines.length - 1; i >= 0; i--) {
-                if (!chatLines[i].parentElement) continue;
-                chatLines[i].parentElement.removeChild(chatLines[i]);
+                chatLines[i].remove();
             }
         }, 100);
     },
@@ -803,8 +798,7 @@ Chat = {
         setTimeout(function() {
             const chatLines = document.querySelectorAll('.chat_line[data-nick="' + nick + '"]');
             for (let i = chatLines.length - 1; i >= 0; i--) {
-                if (!chatLines[i].parentElement) continue;
-                chatLines[i].parentElement.removeChild(chatLines[i]);
+                chatLines[i].remove();
             }
         }, 100);
     },
@@ -813,8 +807,7 @@ Chat = {
         setTimeout(function() {
             const chatLines = document.querySelectorAll('.chat_line[data-id="' + id + '"]');
             for (let i = chatLines.length - 1; i >= 0; i--) {
-                if (!chatLines[i].parentElement) continue;
-                chatLines[i].parentElement.removeChild(chatLines[i]);
+                chatLines[i].remove();
             }
         }, 100);
     },
