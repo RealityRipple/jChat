@@ -912,7 +912,7 @@ Chat = {
                                 if (/^!.+/.test(message.params[1])) return;
                             }
 
-                            if (!Chat.info.showBots) {
+                            if (!Chat.info.showBots && typeof(message.tags.badges) === 'string') {
                                 if (Chat.info.bots.includes(nick)) return;
                                 let flag = false;
                                 message.tags.badges.split(',').forEach(badge => {
