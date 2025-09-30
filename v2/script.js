@@ -912,19 +912,21 @@ Chat = {
                                 if (/^!.+/.test(message.params[1])) return;
                             }
 
-                            if (!Chat.info.showBots && typeof(message.tags.badges) === 'string') {
+                            if (!Chat.info.showBots) {
                                 if (Chat.info.bots.includes(nick)) return;
-                                let flag = false;
-                                message.tags.badges.split(',').forEach(badge => {
-                                    badge = badge.split('/');
-                                    if (badge[0] === "bot-badge") {
-                                        flag = true;
+                                if (typeof(message.tags.badges) === 'string') {
+                                    let flag = false;
+                                    message.tags.badges.split(',').forEach(badge => {
+                                        badge = badge.split('/');
+                                        if (badge[0] === "bot-badge") {
+                                            flag = true;
+                                            return;
+                                        }
+                                    });
+                                    if (flag) {
+                                        Chat.info.bots.push(nick);
                                         return;
                                     }
-                                });
-                                if (flag) {
-                                    Chat.info.bots.push(nick);
-                                    return;
                                 }
                             }
 
