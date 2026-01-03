@@ -429,14 +429,34 @@ Chat = {
 
             // Load channel bot list
             if (!Chat.info.showBots) {
-                ajax('https://api.frankerfacez.com/v1/room/id/' + Chat.info.channelID)
+                ajax('https://api.frankerfacez.com/v1/badges')
                     .then(function(res) {
-                        if (!!res.json && res.json.hasOwnProperty('room') && res.json.room.hasOwnProperty('user_badges') && res.json.room.user_badges.hasOwnProperty('2') && Array.isArray(res.json.room.user_badges['2']) && res.json.room.user_badges['2'].length > 0) {
-                            for (let i = 0; i < res.json.room.user_badges['2'].length; i++) {
-                                if (!Chat.info.bots.includes(res.json.room.user_badges['2'][i]))
-                                    Chat.info.bots.push(res.json.room.user_badges['2'][i]);
+                        let botBadge = '2';
+                        if (!!res.json) {
+                            if (res.json.hasOwnProperty('badges') && Array.isArray(res.json.badges) && res.json.badges.length > 0) {
+                                for (let i = 0; i < res.json.badges.length; i++) {
+                                    if (res.json.badges[i].hasOwnProperty('id') && res.json.badges[i].hasOwnProperty('name') && res.json.badges[i].name === 'bot') {
+                                        botBadge = '' + res.json.badges[i].id;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (res.json.hasOwnProperty('users') && res.json.users.hasOwnProperty(botBadge) && Array.isArray(res.json.users[botBadge])) {
+                                for (let i = 0; i < res.json.users[botBadge].length; i++) {
+                                    if (!Chat.info.bots.includes(res.json.users[botBadge][i]))
+                                        Chat.info.bots.push(res.json.users[botBadge][i]);
+                                }
                             }
                         }
+                        ajax('https://api.frankerfacez.com/v1/room/id/' + Chat.info.channelID)
+                            .then(function(resC) {
+                                if (!!resC.json && resC.json.hasOwnProperty('room') && resC.json.room.hasOwnProperty('user_badges') && resC.json.room.user_badges.hasOwnProperty(botBadge) && Array.isArray(resC.json.room.user_badges[botBadge]) && resC.json.room.user_badges[botBadge].length > 0) {
+                                    for (let i = 0; i < resC.json.room.user_badges[botBadge].length; i++) {
+                                        if (!Chat.info.bots.includes(resC.json.room.user_badges[botBadge][i]))
+                                            Chat.info.bots.push(resC.json.room.user_badges[botBadge][i]);
+                                    }
+                                }
+                            });
                     });
                 ajax('https://api.betterttv.net/3/cached/users/twitch/' + Chat.info.channelID)
                     .then(function(res) {
