@@ -529,6 +529,13 @@ Chat = {
                 }); });
             }
         }
+        if (Chat.info.fade) {
+           for (let i = 0; i < chatLines.length; i++) {
+               if ((Date.now() - chatLines[i].dataset.time) / 1000 >= Chat.info.fade * 2) {
+                   chatLines[i].remove();
+               }
+           }
+        }
     }, 200),
 
     loadUserBadges: function(nick, userId) {
