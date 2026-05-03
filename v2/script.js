@@ -137,12 +137,12 @@ Chat = {
         showBots: ('bots' in queryString ? (queryString.bots.toLowerCase() === 'true') : false),
         hideCommands: ('hide_commands' in queryString ? (queryString.hide_commands.toLowerCase() === 'true') : false),
         hideBadges: ('hide_badges' in queryString ? (queryString.hide_badges.toLowerCase() === 'true') : false),
-        fade: ('fade' in queryString ? parseInt(queryString.fade) : false),
-        size: ('size' in queryString ? parseInt(queryString.size) : 3),
-        font: ('font' in queryString ? parseInt(queryString.font) : 0),
-        emoji: ('emoji' in queryString ? parseInt(queryString.emoji) : 0),
-        stroke: ('stroke' in queryString ? parseInt(queryString.stroke) : false),
-        shadow: ('shadow' in queryString ? parseInt(queryString.shadow) : false),
+        fade: ('fade' in queryString ? parseInt(queryString.fade, 10) : false),
+        size: ('size' in queryString ? parseInt(queryString.size, 10) : 3),
+        font: ('font' in queryString ? parseInt(queryString.font, 10) : 0),
+        emoji: ('emoji' in queryString ? parseInt(queryString.emoji, 10) : 0),
+        stroke: ('stroke' in queryString ? parseInt(queryString.stroke, 10) : false),
+        shadow: ('shadow' in queryString ? parseInt(queryString.shadow, 10) : false),
         smallCaps: ('small_caps' in queryString ? (queryString.small_caps.toLowerCase() === 'true') : false),
         emotes: {},
         badges: {},
@@ -711,9 +711,8 @@ Chat = {
             info.emotes.split('/').forEach(emoteData => {
                 const twitchEmote = emoteData.split(':');
                 const indexes = twitchEmote[1].split(',')[0].split('-');
-                const emojis = new RegExp('[\u1000-\uFFFF]+', 'g');
-                const aux = message.replace(emojis, ' ');
-                const emoteCode = aux.substr(indexes[0], indexes[1] - indexes[0] + 1);
+                const aux = Array.from(message);
+                const emoteCode = aux.slice(indexes[0], parseInt(indexes[1], 10) + 1).join('');
                 replacements[emoteCode] = '<img class="emote" src="https://static-cdn.jtvnw.net/emoticons/v2/' + twitchEmote[0] + '/default/dark/3.0" />';
             });
         }
@@ -728,8 +727,8 @@ Chat = {
 
         message = escapeHtml(message);
 
-        if (info.bits && parseInt(info.bits) > 0) {
-            const bits = parseInt(info.bits);
+        if (info.bits && parseInt(info.bits, 10) > 0) {
+            const bits = parseInt(info.bits, 10);
             let parsed = false;
             for (cheerType of Object.entries(Chat.info.cheers)) {
                 const regex = new RegExp(cheerType[0] + "\\d+\\s*", 'ig');
