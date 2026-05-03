@@ -711,9 +711,8 @@ Chat = {
             info.emotes.split('/').forEach(emoteData => {
                 const twitchEmote = emoteData.split(':');
                 const indexes = twitchEmote[1].split(',')[0].split('-');
-                const emojis = new RegExp('[\u1000-\uFFFF]+', 'g');
-                const aux = message.replace(emojis, ' ');
-                const emoteCode = aux.substr(indexes[0], indexes[1] - indexes[0] + 1);
+                const aux = Array.from(message);
+                const emoteCode = aux.slice(indexes[0], parseInt(indexes[1]) + 1).join('');
                 replacements[emoteCode] = '<img class="emote" src="https://static-cdn.jtvnw.net/emoticons/v2/' + twitchEmote[0] + '/default/dark/3.0" />';
             });
         }
