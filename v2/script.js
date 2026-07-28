@@ -257,16 +257,20 @@ Chat = {
         })
 
         ajax('https://7tv.io/v3/users/twitch/' + encodeURIComponent(channelID)).then((res) => {
-            res.json?.emote_set?.emotes?.forEach(emote => {
-                let emoteData = emote.data.host.files.pop();
-                while (emoteData.format !== 'WEBP')
-                    emoteData = emote.data.host.files.pop();
-                Chat.info.emotes[emote.name] = {
-                    id: emote.id,
-                    image: `https:${emote.data.host.url}/${emoteData.name}`,
-                    zeroWidth: (emote.data.flags & 0x100) === 0x100,
-                }
-            })
+            if (res.json?.emote_set_id) {
+                ajax('https://7tv.io/v3/emote-sets/' + encodeURIComponent(res.json.emote_set_id)).then((resSet) => {
+                    resSet.json?.emotes?.forEach(emote => {
+                        let emoteData = emote.data.host.files.pop();
+                        while (emoteData.format !== 'WEBP')
+                            emoteData = emote.data.host.files.pop();
+                        Chat.info.emotes[emote.name] = {
+                            id: emote.id,
+                            image: `https:${emote.data.host.url}/${emoteData.name}`,
+                            zeroWidth: (emote.data.flags & 0x100) === 0x100,
+                        }
+                    })
+                })
+            }
         })
     },
 
